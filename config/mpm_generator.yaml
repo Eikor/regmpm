@@ -1,0 +1,16 @@
+# Hydra configuration file for ground-truth generation
+
+file:
+  tracklet: 'annotation/090318-C2C12P7_F0017.txt'                     # [frame id x y parent_id(-1 if none)]
+  target: 'data/train_imgs/F0017/0000.tif'       # One of the target images
+
+path:
+  save_path: 'data/train_mpms/F0017_parallel'            # Create directory for each interval
+
+param:
+  z_value: 5                                    # z-axis unit (pixel)
+  sigma: 5                                      # sigma of gaussian filter
+  itvs: [1, 3, 5, 7, 9]                         # MPM intervals (list), e.g. [1], [3, 5], [1, 2, 3], ...
+
+direction: 'parallel'
+# direction: 'peak'
