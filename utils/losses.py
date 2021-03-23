@@ -76,4 +76,4 @@ class trackLoss(nn.Module):
         
         consistency_loss = self.consistency(cur_hm, offset, pre_hm)
             
-        return [self.consistency_weights * consistency_loss, mse_loss]
+        return [consistency_loss, mse_loss]

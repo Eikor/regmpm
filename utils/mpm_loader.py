@@ -42,20 +42,20 @@ class MPM_Dataset(Dataset):
         # process for MPM
         ## seed = 1 or 5: 90 degrees counterclockwise
         if seed % 4 == 1:
-            mpm[:, :, 3] = -mpm[:, :, 3]
-            mpm = mpm[:, :, [0, 1, 3, 2]]
+            mpm[:, :, 2] = -mpm[:, :, 2]
+            mpm = mpm[:, :, [0, 2, 1, 3]]
         ## seed = 2 or 6: 180 degrees counterclockwise
         if seed % 4 == 2:
-            mpm[:, :, 2:4] = -mpm[:, :, 2:4]
+            mpm[:, :, 1:3] = -mpm[:, :, 1:3]
         ## seed = 3 or 7: 270 degrees counterclockwise
         if seed % 4 == 3:
-            mpm[:, :, 2] = -mpm[:, :, 2]
-            mpm = mpm[:, :, [0, 1, 3, 2]]
+            mpm[:, :, 1] = -mpm[:, :, 1]
+            mpm = mpm[:, :, [0, 2, 1, 3]]
         ## flip horizontal (4 or more)
         if seed > 3:
             img = np.fliplr(img).copy()
             mpm = np.fliplr(mpm).copy()
-            mpm[:, :, 3] = -mpm[:, :, 3]
+            mpm[:, :, 2] = -mpm[:, :, 2]
         return img, mpm
 
     def __getitem__(self, i):

@@ -24,7 +24,6 @@ def eval_net(net, loader, device, criterion, writer, global_step):
                 mpms_pred = net(imgs)
 
             error = criterion(mpms_pred, mpms_gt)
-            total_error += (error[0] + error[1]).item()
 
             pbar.update()
 
@@ -42,7 +41,7 @@ def eval_net(net, loader, device, criterion, writer, global_step):
         # writer.add_images('mags/pred', mags_pred, global_step)
 
     net.train()
-    return total_error / n_val
+    return error
 
 def tracking(net, device, file, images_url, cover):
     images = sorted(glob(path.join(images_url, '*.tif')))

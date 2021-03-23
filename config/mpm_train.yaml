@@ -14,7 +14,7 @@ kernel_size: 7
 sigma: 0.25
 threshold: 0.5 
 crit: 'mse' 
-consistency_weights: 1
+consistency_weights: 0.5
 
 world_size: 4
 

@@ -76,7 +76,7 @@ def train_net(net,
                 writer.add_scalar('Loss/train/mse', loss[1].item(), global_step)
                 pbar.set_postfix(**{'consistency': loss[0].item(), 'mse': loss[1].item()})
 
-                loss = loss[0] + loss[1]
+                loss = cfg.consistency_weights * loss[0] + loss[1]
                 epoch_loss += loss.item()
 
                 optimizer.zero_grad()
@@ -95,8 +95,9 @@ def train_net(net,
                     # scheduler.step(val_score)
                     writer.add_scalar('learning_rate', optimizer.param_groups[0]['lr'], global_step)
 
-                    logging.info('Validation loss: {}'.format(val_loss))
-                    writer.add_scalar('Loss/test', val_loss, global_step)
+                    logging.info('Validation consistency: {} Validation mse: {}'.format(val_loss[0].item(), val_loss[1].item()))
+                    writer.add_scalar('Loss/test/consistency', val_loss[0].item(), global_step)
+                    writer.add_scalar('Loss/test/mse', val_loss[1].item(), global_step)
         
         if cfg.output.save:
             if global_step % (n_train // (batch_size) * 10) == 0:
