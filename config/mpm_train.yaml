@@ -7,6 +7,16 @@ train:
   epochs: 300                  # Number of epoch
   batch_size: 16               # Batch size
   lr: 0.0001                  # Learning rate of Adam
+  
+pre: True
+norm: True
+kernel_size: 7
+sigma: 0.25
+threshold: 0.5 
+crit: 'mse' 
+consistency_weights: 1
+
+world_size: 4
 
 eval:
   imgs:      # None is OK. In that case, eval.rate in the training data is used for evaluation.

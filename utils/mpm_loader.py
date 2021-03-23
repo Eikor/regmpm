@@ -11,12 +11,13 @@ from scipy.ndimage import rotate
 from hydra.utils import to_absolute_path as abs_path
 
 class MPM_Dataset(Dataset):
-    def __init__(self, cfg_type, cfg_data):
-        self.imgs_dir = abs_path(cfg_type.imgs)
-        self.mpms_dir = abs_path(cfg_type.mpms)
-        self.itvs = cfg_type.itvs
-        self.edge = cfg_data.edge
-        self.height, self.width = cfg_data.height, cfg_data.width
+    def __init__(self, cfg):
+        self.imgs_dir = abs_path(cfg.train.imgs)
+        self.mpms_dir = abs_path(cfg.train.mpms)
+        self.itvs = cfg.train.itvs
+        self.edge = cfg.dataloader.edge
+        self.height, self.width = cfg.dataloader.height, cfg.dataloader.width
+        self.reg = f'*{"_norm" if cfg.norm else ""}{"_pre" if cfg.pre else ""}'
 
         seqs = sorted(glob(join(self.imgs_dir, '*')))
         self.img_paths = []
@@ -66,7 +67,7 @@ class MPM_Dataset(Dataset):
         img1_file = glob(idx[0])
         img2_file = glob(nxt_idx[0])
         img_name = splitext(basename(idx[0]))[0]
-        mpm_name = join(self.mpms_dir, idx[1], f'{itv:03}', img_name)
+        mpm_name = join(self.mpms_dir, idx[1] + self.reg, f'{itv:03}', img_name)
         mpm_file = glob(mpm_name + '.*')
 
         assert len(mpm_file) == 1, \

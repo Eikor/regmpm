@@ -23,7 +23,8 @@ def eval_net(net, loader, device, criterion, writer, global_step):
             with torch.no_grad():
                 mpms_pred = net(imgs)
 
-            total_error += criterion(mpms_pred, mpms_gt).item()
+            error = criterion(mpms_pred, mpms_gt)
+            total_error += (error[0] + error[1]).item()
 
             pbar.update()
 

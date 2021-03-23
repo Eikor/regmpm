@@ -14,7 +14,7 @@ from torch.utils.tensorboard import SummaryWriter
 from utils.mpm_loader import MPM_Dataset
 from torch.utils.data import DataLoader, random_split
 
-from utils.losses import RMSE_Q_NormLoss, regtrackLoss, trackLoss
+from utils.losses import trackLoss
 
 import hydra
 from hydra.utils import to_absolute_path
@@ -24,12 +24,12 @@ def train_net(net,
               cfg):
 
     if cfg.eval.imgs is not None:
-        train = MPM_Dataset(cfg.train, cfg.dataloader)
-        val = MPM_Dataset(cfg.eval, cfg.dataloader)
+        train = MPM_Dataset(cfg)
+        val = MPM_Dataset(cfg)
         n_train = len(train)
         n_val = len(val)
     else:
-        dataset = MPM_Dataset(cfg.train, cfg.dataloader)
+        dataset = MPM_Dataset(cfg)
         n_val = int(len(dataset) * cfg.eval.rate)
         n_train = len(dataset) - n_val
         train, val = random_split(dataset, [n_train, n_val])
@@ -45,7 +45,7 @@ def train_net(net,
     optimizer = optim.Adam(net.parameters(), lr=cfg.train.lr)
     # scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'min' if net.n_classes > 1 else 'max', patience=2)
     # criterion = regtrackLoss((cfg.dataloader.height, cfg.dataloader.width), 0.8, device)
-    criterion = trackLoss()
+    criterion = trackLoss(cfg).cuda()
     logging.info(f'''Starting training:
         Epochs:          {epochs}
         Batch size:      {batch_size}
@@ -72,10 +72,12 @@ def train_net(net,
 
                 mpms_pred = net(imgs)
                 loss = criterion(mpms_pred, mpms_gt)
-                epoch_loss += loss.item()
-                writer.add_scalar('Loss/train', loss.item(), global_step)
+                writer.add_scalar('Loss/train/consistency', loss[0].item(), global_step)
+                writer.add_scalar('Loss/train/mse', loss[1].item(), global_step)
+                pbar.set_postfix(**{'consistency': loss[0].item(), 'mse': loss[1].item()})
 
-                pbar.set_postfix(**{'loss (batch)': loss.item()})
+                loss = loss[0] + loss[1]
+                epoch_loss += loss.item()
 
                 optimizer.zero_grad()
                 loss.backward()
